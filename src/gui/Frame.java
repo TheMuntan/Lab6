@@ -69,10 +69,10 @@ public class Frame {
         button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (counter > 2)
-                counter--;
-                label1.setText("Number of people: " + counter);
-
+                if (counter > 2) {
+                    counter--;
+                    label1.setText("Number of people: " + counter);
+                }
             }
         }
         );

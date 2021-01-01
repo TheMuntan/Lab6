@@ -1,7 +1,5 @@
 package factory;
 
-import person.Person;
-
 public class AbstractFactory {
 
 
