@@ -1,25 +1,18 @@
 package ticket;
 
 import person.Person;
+import java.util.HashMap;
 
 public class Ticket {
 
-    private Person[] pList;
-    private boolean evenSplit;
     private int total;
+    private HashMap<Person, Double> pHash;
+    private Person payed;
 
-    public Ticket(int total, Person[] pList, boolean evenSplit) {
+    public Ticket(int total, HashMap<Person, Double> pHash, Person payed) {
         this.total = total;
-        this.pList = pList;
-        this.evenSplit = evenSplit;
-    }
-
-    public Person[] getpList() {
-        return pList;
-    }
-
-    public boolean isEvenSplit() {
-        return evenSplit;
+        this.pHash = pHash;
+        this.payed = payed;
     }
 
     
