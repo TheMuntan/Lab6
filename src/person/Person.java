@@ -41,7 +41,7 @@ public class Person {
         this.name = name;
     }
 
-    public boolean isHasOwedList() {
+    public boolean HasOwedList() {
         return hasOwedList;
     }
 
