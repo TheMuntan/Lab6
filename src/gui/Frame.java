@@ -323,7 +323,10 @@ public class Frame implements ActionListener{
 
         panel.add(button1);
         panel.add(button2);
-        panel.add(button3);
+
+        if (!tickets.isEmpty())
+            panel.add(button3);
+
         panel.add(splitLabel);
         panel.add(payedPersonLabel);
         panel.add(payedPersonField);
