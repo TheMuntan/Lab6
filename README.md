@@ -1,2 +1,4 @@
 # Lab6
-Moneytracker for 5 Software Design Lab 6
+Money Tracker for 5 Software Design Final project
+
+Lab 6
