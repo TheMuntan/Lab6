@@ -43,7 +43,8 @@ public class Frame implements ActionListener{
     private JTextField totalField = new JTextField();
     private JLabel payedPersonLabel;
     private JTextField payedPersonField;
-    private HashMap<Double, HashMap<Person, Person>> tripleHashMap;
+    private HashMap<HashMap<Person, Person>, Double> tripleHashMap;
+    private JLabel incorrectFill = new JLabel("Please make sure everything is filled in correctly!");
 
 
     //https://www.youtube.com/watch?v=5o3fMLPY7qY
@@ -153,15 +154,47 @@ public class Frame implements ActionListener{
                 break;
 
             case "next":
+                panel.remove(incorrectFill);
+                incorrectFill.setForeground(Color.RED);
+                incorrectFill.setBounds(420, 630, 300, 20);
+                boolean filledCorrectly = true;
+                this.refreshFrame();
+
                 if (firstFrame) {
-                    this.addPersons();
-                    firstFrame = false;
-                } 
-                else {
+                    for (int i = 0; i < textFields.size(); i++) {
+                        if(textFields.get(i).getText().isEmpty()) {
+                            filledCorrectly = false;
+                        }
+                    }
+                    if (filledCorrectly) {
+                        this.addPersons();
+                        firstFrame = false;
+                        this.nextFrame();
+                    } else {
+                        panel.add(incorrectFill);
+                    }
+                } else {
                     pHash = new HashMap<>();
                     it = pList.iterator();
                     int indexPayed = 0;
                     int currentIndex = 0;
+
+                    if (payedPersonField.getText().isEmpty()) {
+                        filledCorrectly = false;
+                    } else if (evenSplit && totalField.getText().isEmpty()) {
+                        filledCorrectly = false;
+                    } else {
+                        if (!evenSplit) {
+                            for (int i = 0; i < pList.size(); i++) {
+                                if (ticketFields.get(i).getText().isEmpty()) {
+                                    filledCorrectly = false;
+                                }
+                            }
+                        }
+                    }
+
+                    if (filledCorrectly) {
+
                     while(it.hasNext()) { //iterating through our persons list to find the index of the person who payed
                         if (it.next().getName().equalsIgnoreCase(payedPersonField.getText())) {
                             indexPayed = currentIndex;
@@ -189,19 +222,28 @@ public class Frame implements ActionListener{
                         }
                     }
                     tickets.add(tFactory.getTicket(pHash, payed));
-                    System.out.println(tickets.get(0).getpHash());
+                    ticketLabels.clear();
+                    ticketFields.clear();
+                    this.nextFrame();
+                    } else {
+                        panel.add(incorrectFill);
+                    }
                 }
-                ticketLabels.clear();
-                ticketFields.clear();
-                this.nextFrame();
+                this.refreshFrame();
+                
                 break;
             
             case "calculate":
+                this.removePriceField();
                 panel.removeAll();
                 this.refreshFrame();
                 Calculator calculator = Calculator.getInstance();
                 tripleHashMap = calculator.calculateFinalTotal(pList);
                 this.finalFrame();
+                break;
+
+            case "close":
+                mainFrame.dispose();
                 break;
 
             default:
@@ -248,6 +290,7 @@ public class Frame implements ActionListener{
     public void nextFrame() {
         panel.removeAll();
         boundY = 20;
+        boundfieldx = 350;
         
         this.ticketFrame();
     }
@@ -335,23 +378,37 @@ public class Frame implements ActionListener{
     }
 
     public void finalFrame() {
+        boundY = 20;
+        int i = 0;
         Iterator it = tripleHashMap.entrySet().iterator();
         Person owes = null;
         Person owed = null;
         while (it.hasNext()) {
-            Map.Entry<Person, HashMap<Person, Person>> pair = (Map.Entry)it.next();
-            pair.getKey();
-                Iterator it2 = pair.getValue().entrySet().iterator();
+            Map.Entry<HashMap<Person, Person>, Double> pair = (Map.Entry)it.next();
+                Iterator it2 = pair.getKey().entrySet().iterator();
                 while (it2.hasNext()) {
                     Map.Entry<Person, Person> pair2 = (Map.Entry)it2.next();
                     owes = pair2.getKey();
                     owed = pair2.getValue();
                 }
 
+                ticketLabels.add(new JLabel(owes.getName() + " owes €" + pair.getValue() + " to " + owed.getName() + "."));
+        
+                ticketLabels.get(i).setBounds(490, boundY, 300, 20);
+                this.updateBoundY();
+        
+                panel.add(ticketLabels.get(i));
 
-
-            System.out.println(owes.getName() + " owes €" + pair.getKey() + " to " + owed.getName() + ".");
+                i++;                
         }
+
+        JButton buttonClose = new JButton("Close application");
+        buttonClose.setBounds(520, 600, 200, 60);
+
+        panel.add(buttonClose);
+
+        buttonClose.setActionCommand("close");
+        buttonClose.addActionListener(this);
 
     }
 

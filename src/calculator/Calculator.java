@@ -13,13 +13,13 @@ public class Calculator {
     private static Calculator instance = null;
     private List<Person> pList;
     private List<Ticket> tList;
-    private HashMap<Double, HashMap<Person, Person>> tripleHashMap = new HashMap<>();
+    private HashMap<HashMap<Person, Person>, Double> tripleHashMap = new HashMap<>();
     private HashMap<Person, Person> entryMap = new HashMap<>();
 
     private Calculator() {
     }
 
-    public HashMap<Double, HashMap<Person, Person>> calculateFinalTotal(List<Person> pList) {  //returned triple hashmap has values: 1. amount owed 2. person that owes 3. person that is owed
+    public HashMap<HashMap<Person, Person>, Double> calculateFinalTotal(List<Person> pList) {  //returned triple hashmap has values: 1. amount owed 2. person that owes 3. person that is owed
         tripleHashMap = new HashMap<>();
 
         for (int i = 0; i < pList.size(); i++) {
@@ -44,7 +44,7 @@ public class Calculator {
                     if (owedAmount >= 0.0) {
                         entryMap = new HashMap<>();
                         entryMap.put(owedPerson, pList.get(i));
-                        tripleHashMap.put(owedAmount, entryMap);
+                        tripleHashMap.put(entryMap, owedAmount);
                     }
 
                 }
