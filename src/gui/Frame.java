@@ -4,6 +4,8 @@ import javax.swing.*;
 
 import calculator.Calculator;
 import controller.PersonController;
+import database.PersonDatabase;
+import database.TicketDatabase;
 import factory.AbstractFactory;
 import factory.FactoryProducer;
 import person.Person;
@@ -32,12 +34,12 @@ public class Frame implements ActionListener{
     private AbstractFactory tFactory = FactoryProducer.getFactory("ticket");    
     private HashMap<Person, Double> pHash = new HashMap<>();
     private Iterator<Person> it;
-    private List<Person> pList = new ArrayList<>();
+    private PersonDatabase pList = new PersonDatabase();
     private List<JLabel> labels = new ArrayList<>();
     private List<JTextField> textFields = new ArrayList<>();
     private List<JLabel> ticketLabels = new ArrayList<>();
     private List<JTextField> ticketFields = new ArrayList<>();
-    private List<Ticket> tickets = new ArrayList<>();
+    private TicketDatabase tickets = new TicketDatabase();
     private JLabel counterLabel;
     private JLabel splitLabel;
     private boolean firstFrame = true;
@@ -410,7 +412,7 @@ public class Frame implements ActionListener{
                     DecimalFormat df = new DecimalFormat("###.##");
                     ticketLabels.add(new JLabel(owes.getName() + " owes €" + df.format(pair.getValue()) + " to " + owed.getName() + "."));
             
-                    ticketLabels.get(i).setBounds(490, boundY, 300, 20);
+                    ticketLabels.get(i).setBounds(520, boundY, 300, 20);
                     this.updateBoundY();
             
                     panel.add(ticketLabels.get(i));

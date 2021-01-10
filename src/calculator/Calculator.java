@@ -6,20 +6,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import database.PersonDatabase;
+import database.TicketDatabase;
 import person.Person;
 import ticket.Ticket;
 
 public class Calculator {
     private static Calculator instance = null;
-    private List<Person> pList;
-    private List<Ticket> tList;
+    private PersonDatabase pList;
+    private TicketDatabase tList;
     private HashMap<HashMap<Person, Person>, Double> tripleHashMap = new HashMap<>();
     private HashMap<Person, Person> entryMap = new HashMap<>();
 
     private Calculator() {
     }
 
-    public HashMap<HashMap<Person, Person>, Double> calculateFinalTotal(List<Person> pList) {  //returned triple hashmap has values: 1. amount owed 2. person that owes 3. person that is owed
+    public HashMap<HashMap<Person, Person>, Double> calculateFinalTotal(PersonDatabase pList) {  //returned triple hashmap has values: 1. amount owed 2. person that owes 3. person that is owed
         tripleHashMap = new HashMap<>();
 
         for (int i = 0; i < pList.size(); i++) {
@@ -54,27 +56,41 @@ public class Calculator {
         return tripleHashMap;
     }
 
-    public List<Person> getpList() {
-        return pList;
-    }
-
-    public void setpList(List<Person> pList) {
-        this.pList = pList;
-    }
-
-    public List<Ticket> getTicketList() {
-        return tList;
-    }
-
-    public void setTicketList(List<Ticket> tList) {
-        this.tList = tList;
-    }
 
     public static Calculator getInstance() { // singleton pattern
         if (instance == null)
                 instance = new Calculator();
 
         return instance;
+    }
+
+    public static void setInstance(Calculator instance) {
+        Calculator.instance = instance;
+    }
+
+    public PersonDatabase getpList() {
+        return pList;
+    }
+
+    public void setpList(PersonDatabase pList) {
+        this.pList = pList;
+    }
+
+
+    public HashMap<HashMap<Person, Person>, Double> getTripleHashMap() {
+        return tripleHashMap;
+    }
+
+    public void setTripleHashMap(HashMap<HashMap<Person, Person>, Double> tripleHashMap) {
+        this.tripleHashMap = tripleHashMap;
+    }
+
+    public HashMap<Person, Person> getEntryMap() {
+        return entryMap;
+    }
+
+    public void setEntryMap(HashMap<Person, Person> entryMap) {
+        this.entryMap = entryMap;
     }
 
 }
