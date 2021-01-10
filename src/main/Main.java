@@ -1,9 +1,11 @@
 package main;
 
+import controller.PersonController;
 import factory.AbstractFactory;
 import factory.FactoryProducer;
 import gui.Frame;
 import person.Person;
+import view.PersonView;
 
 public class Main {
 
@@ -28,6 +30,11 @@ public class Main {
       lol.owedBy(haha, 36.76);
       System.out.println(lol.getOwedList());
       System.out.println(lol.getOwedList().keySet());
+
+      PersonView viewer = new PersonView();
+      PersonController controller = new PersonController(lol, viewer);
+      controller.setPersonName("Serdar");
+      controller.view();
 
 
     }

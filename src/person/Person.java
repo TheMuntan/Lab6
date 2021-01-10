@@ -37,4 +37,16 @@ public class Person {
         this.owedList = owedList;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isHasOwedList() {
+        return hasOwedList;
+    }
+
+    public void setHasOwedList(boolean hasOwedList) {
+        this.hasOwedList = hasOwedList;
+    }
+
 }

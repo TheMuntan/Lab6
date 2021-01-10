@@ -3,10 +3,12 @@ package gui;
 import javax.swing.*;
 
 import calculator.Calculator;
+import controller.PersonController;
 import factory.AbstractFactory;
 import factory.FactoryProducer;
 import person.Person;
 import ticket.Ticket;
+import view.PersonView;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -240,6 +242,14 @@ public class Frame implements ActionListener{
                 Calculator calculator = Calculator.getInstance();
                 tripleHashMap = calculator.calculateFinalTotal(pList);
                 this.finalFrame();
+
+                for (int i = 0; i < pList.size(); i++) {
+                    PersonView viewer = new PersonView();
+                    PersonController controller = new PersonController(pList.get(i), viewer);
+                    controller.view();
+    
+                }
+
                 break;
 
             case "close":
