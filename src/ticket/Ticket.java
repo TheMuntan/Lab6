@@ -5,15 +5,22 @@ import java.util.HashMap;
 
 public class Ticket {
 
-    private int total;
     private HashMap<Person, Double> pHash;
     private Person payed;
 
-    public Ticket(int total, HashMap<Person, Double> pHash, Person payed) {
-        this.total = total;
+    public Ticket(HashMap<Person, Double> pHash, Person payed) {
         this.pHash = pHash;
         this.payed = payed;
     }
+
+    public HashMap<Person, Double> getpHash() {
+        return pHash;
+    }
+
+    public Person getPayed() {
+        return payed;
+    }
+
 
     
 }

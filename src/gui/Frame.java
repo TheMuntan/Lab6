@@ -2,13 +2,20 @@ package gui;
 
 import javax.swing.*;
 
+import calculator.Calculator;
+import factory.AbstractFactory;
+import factory.FactoryProducer;
 import person.Person;
+import ticket.Ticket;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class Frame implements ActionListener{
 
@@ -18,15 +25,25 @@ public class Frame implements ActionListener{
     private int boundlabelx = 240;
     private int boundfieldx = 320;
     private int boundY = 20;
-    private List<Person> pList = new ArrayList<Person>();
-    private List<JLabel> labels = new ArrayList<JLabel>();
-    private List<JTextField> textFields = new ArrayList<JTextField>();
-    private List<JLabel> ticketLabels = new ArrayList<JLabel>();
-    private List<JTextField> ticketFields = new ArrayList<JTextField>();
+    private AbstractFactory pFactory = FactoryProducer.getFactory("person");
+    private AbstractFactory tFactory = FactoryProducer.getFactory("ticket");    
+    private HashMap<Person, Double> pHash = new HashMap<>();
+    private Iterator<Person> it;
+    private List<Person> pList = new ArrayList<>();
+    private List<JLabel> labels = new ArrayList<>();
+    private List<JTextField> textFields = new ArrayList<>();
+    private List<JLabel> ticketLabels = new ArrayList<>();
+    private List<JTextField> ticketFields = new ArrayList<>();
+    private List<Ticket> tickets = new ArrayList<>();
     private JLabel counterLabel;
     private JLabel splitLabel;
     private boolean firstFrame = true;
     private boolean evenSplit = false;
+    private JLabel totalLabel = new JLabel("Ticket total: ");
+    private JTextField totalField = new JTextField();
+    private JLabel payedPersonLabel;
+    private JTextField payedPersonField;
+    private HashMap<Double, HashMap<Person, Person>> tripleHashMap;
 
 
     //https://www.youtube.com/watch?v=5o3fMLPY7qY
@@ -78,8 +95,7 @@ public class Frame implements ActionListener{
 
         //centering the frame on any monitor : https://stackoverflow.com/questions/2442599/how-to-set-jframe-to-appear-centered-regardless-of-monitor-resolution
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        mainFrame.setLocation(dim.width/2- mainFrame.getSize().width / 2,
-                dim.height / 2 - mainFrame.getSize().height / 2);
+        mainFrame.setLocation(dim.width/2- mainFrame.getSize().width / 2, dim.height / 2 - mainFrame.getSize().height / 2);
 
         mainFrame.add(panel, BorderLayout.CENTER);
         mainFrame.setResizable(false);
@@ -137,9 +153,55 @@ public class Frame implements ActionListener{
                 break;
 
             case "next":
-                if (firstFrame)
+                if (firstFrame) {
                     this.addPersons();
+                    firstFrame = false;
+                } 
+                else {
+                    pHash = new HashMap<>();
+                    it = pList.iterator();
+                    int indexPayed = 0;
+                    int currentIndex = 0;
+                    while(it.hasNext()) { //iterating through our persons list to find the index of the person who payed
+                        if (it.next().getName().equalsIgnoreCase(payedPersonField.getText())) {
+                            indexPayed = currentIndex;
+                            break;
+                        }
+                        currentIndex++;
+                    }
+
+                    Person payed = pList.get(indexPayed);
+
+                    if (evenSplit) {
+                        Double total = Double.parseDouble(totalField.getText());
+                        Double perPerson = total/pList.size();
+                        for (int i = 0; i < pList.size(); i++) {
+                            pHash.put(pList.get(i), perPerson);
+                            if (pList.get(i) != payed) 
+                                payed.owedBy(pList.get(i), perPerson);
+                        }
+                    }
+                    else {
+                        for (int i = 0; i < pList.size(); i++) {
+                            pHash.put(pList.get(i), Double.parseDouble(ticketFields.get(i).getText()));
+                            if (pList.get(i) != payed) 
+                                payed.owedBy(pList.get(i), Double.parseDouble(ticketFields.get(i).getText()));
+                        }
+                    }
+                    tickets.add(tFactory.getTicket(pHash, payed));
+                    System.out.println(tickets.get(0).getpHash());
+                }
+                ticketLabels.clear();
+                ticketFields.clear();
                 this.nextFrame();
+                break;
+            
+            case "calculate":
+                panel.removeAll();
+                this.refreshFrame();
+                Calculator calculator = Calculator.getInstance();
+                tripleHashMap = calculator.calculateFinalTotal(pList);
+                this.finalFrame();
                 break;
 
             default:
@@ -169,7 +231,9 @@ public class Frame implements ActionListener{
     }
 
     public void addPersons() {
-
+        for (int i = 0; i < textFields.size(); i++) {
+            pList.add(pFactory.getPerson(textFields.get(i).getText()));
+        }
     }
 
     public void updateBoundY() {
@@ -185,7 +249,6 @@ public class Frame implements ActionListener{
         panel.removeAll();
         boundY = 20;
         
-        this.refreshFrame();
         this.ticketFrame();
     }
 
@@ -194,27 +257,41 @@ public class Frame implements ActionListener{
         
         JButton button1 = new JButton("Toggle bill split evenly");
         button1.setBounds(10, 20, 200, 20);
-        JButton button2 = new JButton("Next");
+        JButton button2 = new JButton("Add ticket");
         button2.setBounds(1120, 620, 120, 40);
+        JButton button3 = new JButton("Calculate");
+        button3.setBounds(1120, 560, 120, 40);
+        evenSplit = false;
         splitLabel = new JLabel("Bill is not split evenly.");
         splitLabel.setBounds(50, 50, 200, 20);
+        payedPersonLabel = new JLabel("Person who payed:");
+        payedPersonField = new JTextField();
+        payedPersonLabel.setBounds(600, 20, 200, 20);
+        payedPersonField.setBounds(720, 20, 200, 20);
         this.addPriceField();
 
         button1.setActionCommand("split");
-        button1.addActionListener(this);
+        button1.addActionListener(this);        
+        button2.setActionCommand("next");
+        button2.addActionListener(this);
+        button3.setActionCommand("calculate");
+        button3.addActionListener(this);
 
 
         panel.add(button1);
         panel.add(button2);
+        panel.add(button3);
         panel.add(splitLabel);
+        panel.add(payedPersonLabel);
+        panel.add(payedPersonField);
 
 
         this.refreshFrame();
     }
 
     public void addPriceField() {
-        for (int i=0; i < 10; i++) {
-        ticketLabels.add(new JLabel("Person " + (i + 1) + " : "));
+        for (int i=0; i < textFields.size(); i++) {
+        ticketLabels.add(new JLabel(pList.get(i).getName() + " :"));
         ticketFields.add(new JTextField());
 
         ticketLabels.get(i).setBounds(boundlabelx, boundY, 300, 20);
@@ -225,22 +302,57 @@ public class Frame implements ActionListener{
         panel.add(ticketFields.get(i));
 
         }
+
+        panel.remove(totalLabel);
+        panel.remove(totalField);
+        
         boundY = 20;
         this.refreshFrame();
 
     }
 
     public void removePriceField() {
-        for (int i=9; i >= 0; i--) {
-        panel.remove(ticketLabels.get(i));
-        panel.remove(ticketFields.get(i));
+        for (int i=textFields.size(); i > 0; i--) {
+        panel.remove(ticketLabels.get(i-1));
+        panel.remove(ticketFields.get(i-1));
 
-        ticketLabels.remove(i);
-        ticketFields.remove(i);
+        ticketLabels.remove(i-1);
+        ticketFields.remove(i-1);
         }
+
+        totalLabel = new JLabel("Ticket total: ");
+        totalField = new JTextField();
+
+        totalLabel.setBounds(boundlabelx, 20, 300, 20);
+        totalField.setBounds(boundfieldx, 20, 200, 20);
+
+
+        panel.add(totalLabel);
+        panel.add(totalField);
+
 
         this.refreshFrame();
     }
 
-}
+    public void finalFrame() {
+        Iterator it = tripleHashMap.entrySet().iterator();
+        Person owes = null;
+        Person owed = null;
+        while (it.hasNext()) {
+            Map.Entry<Person, HashMap<Person, Person>> pair = (Map.Entry)it.next();
+            pair.getKey();
+                Iterator it2 = pair.getValue().entrySet().iterator();
+                while (it2.hasNext()) {
+                    Map.Entry<Person, Person> pair2 = (Map.Entry)it2.next();
+                    owes = pair2.getKey();
+                    owed = pair2.getValue();
+                }
 
+
+
+            System.out.println(owes.getName() + " owes €" + pair.getKey() + " to " + owed.getName() + ".");
+        }
+
+    }
+
+}
