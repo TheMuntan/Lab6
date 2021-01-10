@@ -13,6 +13,7 @@ import view.PersonView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -406,7 +407,8 @@ public class Frame implements ActionListener{
                 }
 
                 if (pair.getValue() > 0) {
-                    ticketLabels.add(new JLabel(owes.getName() + " owes €" + pair.getValue() + " to " + owed.getName() + "."));
+                    DecimalFormat df = new DecimalFormat("###.##");
+                    ticketLabels.add(new JLabel(owes.getName() + " owes €" + df.format(pair.getValue()) + " to " + owed.getName() + "."));
             
                     ticketLabels.get(i).setBounds(490, boundY, 300, 20);
                     this.updateBoundY();
