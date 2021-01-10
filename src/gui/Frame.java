@@ -392,14 +392,16 @@ public class Frame implements ActionListener{
                     owed = pair2.getValue();
                 }
 
-                ticketLabels.add(new JLabel(owes.getName() + " owes €" + pair.getValue() + " to " + owed.getName() + "."));
-        
-                ticketLabels.get(i).setBounds(490, boundY, 300, 20);
-                this.updateBoundY();
-        
-                panel.add(ticketLabels.get(i));
+                if (pair.getValue() > 0) {
+                    ticketLabels.add(new JLabel(owes.getName() + " owes €" + pair.getValue() + " to " + owed.getName() + "."));
+            
+                    ticketLabels.get(i).setBounds(490, boundY, 300, 20);
+                    this.updateBoundY();
+            
+                    panel.add(ticketLabels.get(i));
 
-                i++;                
+                    i++;                
+                }
         }
 
         JButton buttonClose = new JButton("Close application");
